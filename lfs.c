@@ -2131,6 +2131,9 @@ fixmlist:;
     // our mdir.
     lfs_block_t oldpair[2] = {pair[0], pair[1]};
     for (struct lfs_mlist *d = lfs->mlist; d; d = d->next) {
+		if (d == d->next) { // second fix
+			break;
+		}
         if (lfs_pair_cmp(d->m.pair, oldpair) == 0) {
             d->m = *dir;
             if (d->m.pair != pair) {
@@ -2176,6 +2179,9 @@ static int lfs_dir_orphaningcommit(lfs_t *lfs, lfs_mdir_t *dir,
     // check for any inline files that aren't RAM backed and
     // forcefully evict them, needed for filesystem consistency
     for (lfs_file_t *f = (lfs_file_t*)lfs->mlist; f; f = f->next) {
+		if (f == f-> next) { // first fix
+			break;
+		}
         if (dir != &f->m && lfs_pair_cmp(f->m.pair, dir->pair) == 0 &&
                 f->type == LFS_TYPE_REG && (f->flags & LFS_F_INLINE) &&
                 f->ctz.size > lfs->cfg->cache_size) {
